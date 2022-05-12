@@ -1,7 +1,6 @@
 {
   "name": "magpayhub-server",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -33,5 +32,15 @@
       "source": "/api/(.*)",
       "destination": "/api/404.js"
     }
-  ]
+  ],
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mridul-web-me/MagpyeHub-Server2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Mridul-web-me/MagpyeHub-Server2/issues"
+  },
+  "homepage": "https://github.com/Mridul-web-me/MagpyeHub-Server2#readme",
+  "description": ""
 }
