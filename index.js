@@ -308,41 +308,108 @@ async function run() {
             const result = await productsCollection.updateOne(filter, updateDoc, options);
             res.json(result);
         });
-        app.put('/users/:_id', async (req, res) => {
+        app.put('/phone/users/:_id', async (req, res) => {
             const id = req.params._id;
             const updated = req.body;
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updateDoc = {
                 $set: {
-                    phone: updated.phone,
-                    country: updated.country
+                    phone: updated.phone
                 },
             };
             const result = await usersCollection.updateOne(filter, updateDoc, options);
             res.json(result);
         });
 
+        app.put('/townCity/users/:_id', async (req, res) => {
+            const id = req.params._id;
+            const updated = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    townCity: updated.townCity
+                },
+            };
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+        });
+
+        app.put('/country/users/:_id', async (req, res) => {
+            const id = req.params._id;
+            const updated = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    country: updated.country
+                },
+            };
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+        });
+        app.put('/postcode/users/:_id', async (req, res) => {
+            const id = req.params._id;
+            const updated = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    postcode: updated.postcode
+                },
+            };
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+        });
+        app.put('/telephone/users/:_id', async (req, res) => {
+            const id = req.params._id;
+            const updated = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    telephone: updated.telephone
+                },
+            };
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+        });
+
+        // app.get('/orders', async (req, res) => {
+        //     const email = req.query.email;
+        //     const query = { email: email };
+        //     console.log(email)
+        //     const user = await usersCollection.findOne(query);
+        //     if (email) {
+        //         cursor = ordersCollection.find(query)
+        //         order = await cursor.toArray()
+        //         res.json(order)
+        //     } else {
+        //         cursor = ordersCollection.find({})
+        //         order = await cursor.toArray();
+        //         res.json(order)
+        //     }
+        // })
+
         app.get('/orders', verifyToken, async (req, res) => {
             const email = req.query.email;
-            const query = { email: email };
-            console.log(email)
-            const user = await usersCollection.findOne(query);
-            if (req.decodedUser === email) {
-                const query = { email: email }
-                if (email) {
-                    cursor = ordersCollection.find(query)
-                    order = await cursor.toArray()
-                    res.json(order)
-                } else {
-                    cursor = ordersCollection.find({})
-                    order = await cursor.toArray();
-                    res.json(order)
-                }
+
+            // console.log(email);
+            const query = { email: email }
+            // console.log(query);
+            if (email) {
+                cursor = ordersCollection.find(query)
+                order = await cursor.toArray()
+                res.json(order)
             }
             else {
-                res.status(401)
+                cursor = ordersCollection.find({})
+                order = await cursor.toArray();
+                res.json(order)
             }
+
+
         })
 
 
