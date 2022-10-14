@@ -441,6 +441,9 @@ async function run() {
 
 
     }
+    catch{
+       res.json(err)
+    }
     finally {
         // await client.close();
     }
