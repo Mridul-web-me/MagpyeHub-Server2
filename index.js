@@ -152,12 +152,14 @@ async function run() {
         app.get('/products', async (req, res) => {
             const category = req.query.category
             const search = req.query.search;
-            if (category) {
-                cursor = productsCollection.find({ category: category });
-            }
-            else {
-                cursor = productsCollection.find({});
-            }
+            const cursor = productsCollection.find({});
+            // if (category) {
+            //     cursor = productsCollection.find({ category: category });
+            // }
+            // else {
+            //     cursor = productsCollection.find({});
+            // }
+            const allProduct = await productsCollection.find({})
             const page = req.query.page;
             const size = parseInt(req.query.size);
             let products;
@@ -172,10 +174,16 @@ async function run() {
             res.send({
                 count,
                 products,
-
+                allProduct
             });
         })
 
+        app.get('/products/category', async (req, res) => {
+            const category = req.query.category
+            const cursor = productsCollection.find({category: category});
+            const categoryProduct = await cursor.toArray();
+            res.json(categoryProduct);
+        })
 
         app.get('/products/search', async (req, res) => {
             const search = req.query.search
