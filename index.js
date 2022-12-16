@@ -152,13 +152,13 @@ async function run() {
         app.get('/products', async (req, res) => {
             const category = req.query.category
             const search = req.query.search;
-            const cursor = productsCollection.find({});
-            // if (category) {
-            //     cursor = productsCollection.find({ category: category });
-            // }
-            // else {
-            //     cursor = productsCollection.find({});
-            // }
+            // const cursor = productsCollection.find({});
+            if (category) {
+                cursor = await productsCollection.find({ category: category });
+            }
+            else {
+                cursor = await productsCollection.find({});
+            }
             const allProduct = await productsCollection.find({})
             const page = req.query.page;
             const size = parseInt(req.query.size);
@@ -178,12 +178,14 @@ async function run() {
             });
         })
 
-        app.get('/products/category', async (req, res) => {
-            const category = req.query.category
-            const cursor = productsCollection.find({category: category});
-            const categoryProduct = await cursor.toArray();
-            res.json(categoryProduct);
-        })
+        // app.get('/products/category', async (req, res) => {
+        //     const category = req.query.category
+        //     const cursor = productsCollection.find({category: category});
+        //     const categoryProduct = await cursor.toArray();
+        //     res.send({
+        //         categoryProduct
+        //     });
+        // })
 
         app.get('/products/search', async (req, res) => {
             const search = req.query.search
