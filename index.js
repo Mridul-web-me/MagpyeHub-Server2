@@ -205,21 +205,40 @@ async function run() {
     });
     
 
-        app.get('/products/search', async (req, res) => {
-            const search = req.query.search
-            const cursor = productsCollection.find({})
-            const result = await cursor.toArray()
-            if (search) {
-                const searchResult = result.filter(product => product.title.toLowerCase().includes(search.toLowerCase()))
-                res.send(searchResult)
-            }
-        })
+        // app.get('/products/search', async (req, res) => {
+        //     const search = req.query.search
+        //     const cursor = productsCollection.find({})
+        //     const result = await cursor.toArray()
+        //     if (search) {
+        //         const searchResult = result.filter(product => product.title.toLowerCase().includes(search.toLowerCase()))
+        //         res.send(searchResult)
+        //     }
+        // })
 
-        app.get('/products/:id', async (req, res) => {
+        app.get('/result', async (req, res) => {
+            try {
+              const search = req.query.search;
+              const cursor = productsCollection.find({});
+              const result = await cursor.toArray();
+              if (search) {
+                const searchResult = result.filter((product) =>
+                  product.title.toLowerCase().includes(search.toLowerCase())
+                );
+                res.send(searchResult);
+              } else {
+                res.send([]);
+              }
+            } catch (error) {
+              console.error(error);
+              res.status(500).send({ error: 'Internal server error' });
+            }
+          });
+          
+        app.get('/productsDetails/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const product = await productsCollection.findOne(query);
-            res.send(product);
+            res.json(product);
         })
 
         // DELETE API
