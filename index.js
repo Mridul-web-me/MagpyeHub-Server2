@@ -149,62 +149,58 @@ async function run() {
 
 
         // GET API
-        app.get('/products', async (req, res) => {
-            const category = req.query.category
-            const search = req.query.search;
-            const cursor = await productsCollection.find({});
-            const page = req.query.page;
-            const size = parseInt(req.query.size);
-            let products;
-            const count = await cursor.count();
-
-            if (page) {
-                products = await cursor.skip(page * size).limit(size).toArray();
-            }
-            else {
-                products = await cursor.toArray();
-            }
-            res.send({
-                count,
-                products
-            });
-        })
-
-        // app.get('/products', async (req, res)=>{
-        //     cursor = productsCollection.find({})
-        //     products = await cursor.toArray()
-        //     const count = await cursor.count();
-        //     res.json({products, count})
-        // })
-
-        app.get('/products/:category', async (req, res) => {
-            const category = req.params.category;
-            const page = req.query.page;
-            const size = parseInt(req.query.size);
-            let cursor = productsCollection.find({ category: category });
-            const count = await cursor.count();
-            let products;
-        
-            if (page) {
-                products = await cursor.skip(page * size).limit(size).toArray();
-            } else {
-                products = await cursor.toArray();
-            }
-            res.send({
-                count,
-                products,
-            });
-        });
-        
-
-        // app.get('/products/category', async (req, res) => {
+        // app.get('/products', async (req, res) => {
         //     const category = req.query.category
-        //     const cursor = productsCollection.find({category: category});
-        //     const categoryProduct = await cursor.toArray();
+        //     const search = req.query.search;
+        //     if (category) {
+        //         cursor = productsCollection.find({ category: category });
+        //     }
+        //     else {
+        //         cursor = productsCollection.find({});
+        //     }
+        //     const page = req.query.page;
+        //     const size = parseInt(req.query.size);
+        //     let cursor = productsCollection.find({ category: category });
+        //     const count = await cursor.count();
+        //     let products;
+        
+        //     if (page) {
+        //         products = await cursor.skip(page * size).limit(size).toArray();
+        //     } else {
+        //         products = await cursor.toArray();
+        //     }
         //     res.send({
-        //         categoryProduct
+        //         count,
+        //         products,
+
         //     });
         // })
+        app.get('/products', async (req, res) => {
+            cursor = productsCollection.find({})
+            order = await cursor.toArray()
+            res.json(order)
+            // res.json(order)
+    })
+
+    app.get('/products/:category', async (req, res) => {
+        const category = req.params.category;
+        const page = req.query.page;
+        const size = parseInt(req.query.size);
+        let cursor = productsCollection.find({ category: category });
+        const count = await cursor.count();
+        let products;
+    
+        if (page) {
+            products = await cursor.skip(page * size).limit(size).toArray();
+        } else {
+            products = await cursor.toArray();
+        }
+        res.send({
+            count,
+            products,
+        });
+    });
+    
 
         app.get('/products/search', async (req, res) => {
             const search = req.query.search
