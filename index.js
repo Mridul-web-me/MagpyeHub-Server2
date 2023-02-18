@@ -152,14 +152,7 @@ async function run() {
         app.get('/products', async (req, res) => {
             const category = req.query.category
             const search = req.query.search;
-            // const cursor = productsCollection.find({});
-            if (category) {
-                cursor = await productsCollection.find({ category: category });
-            }
-            else {
-                cursor = await productsCollection.find({});
-            }
-            const allProduct = await productsCollection.find({})
+            const cursor = await productsCollection.find({});
             const page = req.query.page;
             const size = parseInt(req.query.size);
             let products;
@@ -173,10 +166,36 @@ async function run() {
             }
             res.send({
                 count,
-                products,
-                allProduct
+                products
             });
         })
+
+        // app.get('/products', async (req, res)=>{
+        //     cursor = productsCollection.find({})
+        //     products = await cursor.toArray()
+        //     const count = await cursor.count();
+        //     res.json({products, count})
+        // })
+
+        app.get('/products/:category', async (req, res) => {
+            const category = req.params.category;
+            const page = req.query.page;
+            const size = parseInt(req.query.size);
+            let cursor = productsCollection.find({ category: category });
+            const count = await cursor.count();
+            let products;
+        
+            if (page) {
+                products = await cursor.skip(page * size).limit(size).toArray();
+            } else {
+                products = await cursor.toArray();
+            }
+            res.send({
+                count,
+                products,
+            });
+        });
+        
 
         // app.get('/products/category', async (req, res) => {
         //     const category = req.query.category
