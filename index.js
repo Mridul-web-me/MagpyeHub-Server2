@@ -150,32 +150,58 @@ async function run() {
 
         // GET API
         app.get('/products', async (req, res) => {
-            const category = req.query.category
-            const search = req.query.search;
-            if (category) {
-                cursor = productsCollection.find({ category: category });
-            }
-            else {
-                cursor = productsCollection.find({});
-            }
+                cursor = productsCollection.find({})
+                order = await cursor.toArray()
+                res.json(order)
+                // res.json(order)
+        })
+        // app.get('/products', async (req, res) => {
+        //     const category = req.query.category
+        //     const search = req.query.search;
+        //     if (category) {
+        //         cursor = productsCollection.find({ category: category });
+        //     }
+        //     else {
+        //         cursor = productsCollection.find({});
+        //     }
+        //     const page = req.query.page;
+        //     const size = parseInt(req.query.size);
+        //     let products;
+        //     const count = await cursor.count();
+
+        //     if (page) {
+        //         products = await cursor.skip(page * size).limit(size).toArray();
+        //     }
+        //     else {
+        //         products = await cursor.toArray();
+        //     }
+        //     res.send({
+        //         count,
+        //         products,
+
+        //     });
+        // })
+
+
+        app.get('/products/:category', async (req, res) => {
+            const category = req.params.category;
             const page = req.query.page;
             const size = parseInt(req.query.size);
-            let products;
+            let cursor = productsCollection.find({ category: category });
             const count = await cursor.count();
-
+            let products;
+        
             if (page) {
                 products = await cursor.skip(page * size).limit(size).toArray();
-            }
-            else {
+            } else {
                 products = await cursor.toArray();
             }
             res.send({
                 count,
                 products,
-
             });
-        })
-
+        });
+        
 
         app.get('/products/search', async (req, res) => {
             const search = req.query.search
