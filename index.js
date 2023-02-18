@@ -177,8 +177,11 @@ async function run() {
         // })
         app.get('/products', async (req, res) => {
             cursor = productsCollection.find({})
-            order = await cursor.toArray()
-            res.json(order)
+            products = await cursor.toArray()
+            const count = await cursor.count();
+            res.json({
+                products, 
+                count})
             // res.json(order)
     })
 
@@ -195,7 +198,7 @@ async function run() {
         } else {
             products = await cursor.toArray();
         }
-        res.send({
+        res.json({
             count,
             products,
         });
