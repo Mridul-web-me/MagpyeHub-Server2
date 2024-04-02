@@ -150,49 +150,96 @@ async function run() {
 
 
         // GET API
+        // app.get('/products', async (req, res) => {
+        //     const category = req.query.category
+        //     const search = req.query.search;
+        //     if (category) {
+        //         cursor = productsCollection.find({ category: category });
+        //     }
+        //     else {
+        //         cursor = productsCollection.find({});
+        //     }
+        //     const page = req.query.page;
+        //     const size = parseInt(req.query.size);
+        //     let cursor = productsCollection.find({ category: category });
+        //     const count = await cursor.count();
+        //     let products;
+        
+        //     if (page) {
+        //         products = await cursor.skip(page * size).limit(size).toArray();
+        //     } else {
+        //         products = await cursor.toArray();
+        //     }
+        //     res.send({
+        //         count,
+        //         products,
+
+        //     });
+        // })
         app.get('/products', async (req, res) => {
-            const category = req.query.category
-            const search = req.query.search;
-            if (category) {
-                cursor = productsCollection.find({ category: category });
-            }
-            else {
-                cursor = productsCollection.find({});
-            }
-            const page = req.query.page;
-            const size = parseInt(req.query.size);
-            let products;
+            cursor = productsCollection.find({})
+            products = await cursor.toArray()
             const count = await cursor.count();
+            res.json({
+                products, 
+                count})
+            // res.json(order)
+    })
 
-            if (page) {
-                products = await cursor.skip(page * size).limit(size).toArray();
+    app.get('/products/:category', async (req, res) => {
+        const category = req.params.category;
+        const page = req.query.page;
+        const size = parseInt(req.query.size);
+        let cursor = productsCollection.find({ category: category });
+        const count = await cursor.count();
+        let products;
+    
+        if (page) {
+            products = await cursor.skip(page * size).limit(size).toArray();
+        } else {
+            products = await cursor.toArray();
+        }
+        res.json({
+            count,
+            products,
+        });
+    });
+    
+
+        // app.get('/products/search', async (req, res) => {
+        //     const search = req.query.search
+        //     const cursor = productsCollection.find({})
+        //     const result = await cursor.toArray()
+        //     if (search) {
+        //         const searchResult = result.filter(product => product.title.toLowerCase().includes(search.toLowerCase()))
+        //         res.send(searchResult)
+        //     }
+        // })
+
+        app.get('/result', async (req, res) => {
+            try {
+              const search = req.query.search;
+              const cursor = productsCollection.find({});
+              const result = await cursor.toArray();
+              if (search) {
+                const searchResult = result.filter((product) =>
+                  product.title.toLowerCase().includes(search.toLowerCase())
+                );
+                res.send(searchResult);
+              } else {
+                res.send([]);
+              }
+            } catch (error) {
+              console.error(error);
+              res.status(500).send({ error: 'Internal server error' });
             }
-            else {
-                products = await cursor.toArray();
-            }
-            res.send({
-                count,
-                products,
-
-            });
-        })
-
-
-        app.get('/products/search', async (req, res) => {
-            const search = req.query.search
-            const cursor = productsCollection.find({})
-            const result = await cursor.toArray()
-            if (search) {
-                const searchResult = result.filter(product => product.title.toLowerCase().includes(search.toLowerCase()))
-                res.send(searchResult)
-            }
-        })
-
-        app.get('/products/:id', async (req, res) => {
+          });
+          
+        app.get('/productsDetails/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const product = await productsCollection.findOne(query);
-            res.send(product);
+            res.json(product);
         })
 
         // DELETE API
@@ -441,6 +488,9 @@ async function run() {
 
 
 
+    }
+    catch{
+       res.json(err)
     }
     finally {
         // await client.close();
