@@ -89,6 +89,7 @@ async function run() {
 
         //     res.json(result)
         // })
+        
 
         app.post('/newsLater', async (req, res) => {
             const email = req.body;
