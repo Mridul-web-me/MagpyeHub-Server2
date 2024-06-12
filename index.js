@@ -143,42 +143,48 @@ async function run() {
     });
 
     // GET API
-    // app.get('/products', async (req, res) => {
-    //     const category = req.query.category
-    //     const search = req.query.search;
-    //     if (category) {
-    //         cursor = productsCollection.find({ category: category });
-    //     }
-    //     else {
-    //         cursor = productsCollection.find({});
-    //     }
-    //     const page = req.query.page;
-    //     const size = parseInt(req.query.size);
-    //     let cursor = productsCollection.find({ category: category });
-    //     const count = await cursor.count();
-    //     let products;
+    app.get('/products', async (req, res) => {
+      const category = req.query.category;
+      const search = req.query.search;
+      let cursor;
 
-    //     if (page) {
-    //         products = await cursor.skip(page * size).limit(size).toArray();
-    //     } else {
-    //         products = await cursor.toArray();
-    //     }
-    //     res.send({
-    //         count,
-    //         products,
+      if (category) {
+        cursor = productsCollection.find({ category: category });
+      } else {
+        cursor = productsCollection.find({});
+      }
 
-    //     });
-    // })
-    app.get('/products', cache('1 day'), async (req, res) => {
-      cursor = productsCollection.find({});
-      products = await cursor.toArray();
+      const page = req.query.page ? parseInt(req.query.page) : 0;
+      const size = req.query.size ? parseInt(req.query.size) : 10;
+
       const count = await cursor.count();
-      res.json({
-        products,
-        count
+      let products;
+
+      if (page !== undefined && size !== undefined) {
+        products = await cursor
+          .skip(page * size)
+          .limit(size)
+          .toArray();
+      } else {
+        products = await cursor.toArray();
+      }
+
+      res.send({
+        count,
+        products
       });
-      // res.json(order)
     });
+
+    // app.get('/products', cache('1 day'), async (req, res) => {
+    //   cursor = productsCollection.find({});
+    //   products = await cursor.toArray();
+    //   const count = await cursor.count();
+    //   res.json({
+    //     products,
+    //     count
+    //   });
+    //   // res.json(order)
+    // });
 
     app.get('/products/:category', cache('1 day'), async (req, res) => {
       const category = req.params.category;
@@ -203,31 +209,58 @@ async function run() {
     });
 
     // app.get('/products/search', async (req, res) => {
-    //     const search = req.query.search
-    //     const cursor = productsCollection.find({})
-    //     const result = await cursor.toArray()
+    //   try {
+    //     const search = req.query.search;
+    //     const cursor = productsCollection.find({});
+    //     const result = await cursor.toArray();
     //     if (search) {
-    //         const searchResult = result.filter(product => product.title.toLowerCase().includes(search.toLowerCase()))
-    //         res.send(searchResult)
+    //       const searchResult = result.filter(product => product.title.toLowerCase().includes(search.toLowerCase()));
+    //       res.send(searchResult);
+    //     } else {
+    //       res.send([]);
     //     }
-    // })
+    //   } catch (error) {
+    //     console.error(error);
+    //     res.status(500).send({ error: 'Internal server error' });
+    //   }
+    // });
 
-    app.get('/result', async (req, res) => {
+    app.get('/search', async (req, res) => {
       try {
-        const search = req.query.search;
-        const cursor = productsCollection.find({});
-        const result = await cursor.toArray();
-        if (search) {
-          const searchResult = result.filter(product => product.title.toLowerCase().includes(search.toLowerCase()));
-          res.send(searchResult);
-        } else {
-          res.send([]);
+        const searchQuery = req.query.search;
+
+        if (!searchQuery) {
+          return res.status(400).send({ error: 'Search query parameter is required' });
         }
+
+        const cursor = productsCollection.find({
+          title: { $regex: searchQuery, $options: 'i' } // Using regex for case-insensitive search
+        });
+        const results = await cursor.toArray();
+
+        res.send(results);
       } catch (error) {
-        console.error(error);
+        console.error('Error occurred while searching products:', error);
         res.status(500).send({ error: 'Internal server error' });
       }
     });
+
+    // app.get('/result', async (req, res) => {
+    //   try {
+    //     const search = req.query.search;
+    //     const cursor = productsCollection.find({});
+    //     const result = await cursor.toArray();
+    //     if (search) {
+    //       const searchResult = result.filter(product => product.title.toLowerCase().includes(search.toLowerCase()));
+    //       res.send(searchResult);
+    //     } else {
+    //       res.send([]);
+    //     }
+    //   } catch (error) {
+    //     console.error(error);
+    //     res.status(500).send({ error: 'Internal server error' });
+    //   }
+    // });
 
     app.get('/productsDetails/:id', async (req, res) => {
       const id = req.params.id;
