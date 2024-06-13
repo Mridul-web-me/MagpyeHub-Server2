@@ -229,9 +229,9 @@ async function run() {
       try {
         const searchQuery = req.query.search;
 
-        if (!searchQuery) {
-          return res.status(400).send({ error: 'Search query parameter is required' });
-        }
+        // if (!searchQuery) {
+        //   return res.status(400).send({ error: 'Search query parameter is required' });
+        // }
 
         const cursor = productsCollection.find({
           title: { $regex: searchQuery, $options: 'i' } // Using regex for case-insensitive search
